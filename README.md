@@ -1,100 +1,128 @@
 # ⚡ AtmosVibe - Next-Gen Weather Intelligence & Radar
 
-A next-generation, visually captivating, and feature-packed web application providing real-time worldwide weather forecasts, interactive live precipitation radar, procedural Web Audio soundscapes, AI-driven lifestyle insights, and dynamic canvas particle atmospheric visual effects.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Zero API Keys](https://img.shields.io/badge/API%20Keys-Zero%20Required-brightgreen.svg)](#-100-free--zero-api-keys)
+[![PWA Ready](https://img.shields.io/badge/PWA-Installable%20%26%20Offline-orange.svg)](#-progressive-web-app-pwa--offline)
+
+A state-of-the-art, feature-packed weather workstation built with Vanilla HTML5, CSS3, and ES6+ JavaScript. **AtmosVibe** blends atmospheric science with living procedural visuals, real-time animated precipitation radar, Web Audio procedural soundscapes, climate flashback machines, and AI-driven lifestyle insights.
 
 ---
 
-## ✨ Key Features
+## 🌟 Major Highlights & Subsystems
 
 ### 1. 🌦️ Dynamic Living Atmosphere (Canvas VFX Engine)
-- **Ultra 60FPS Procedural Visuals**: Backgrounds adapt dynamically to current weather conditions:
+- **Ultra 60FPS Procedural Visuals**: Backgrounds adapt dynamically to current conditions:
   - **Rain & Drizzle**: Physics-based falling streaks with surface impact ripples.
-  - **Thunderstorm**: Volumetric dark rolling clouds with organic ambient lightning flashes and subtle screen rumble.
-  - **Snowfall**: 3D multi-layered snowflakes with realistic wind turbulence.
-  - **Clear Day**: Radiating solar lens flares and atmospheric light shimmer.
+  - **Thunderstorm**: Dark storm clouds with organic lightning forks and atmospheric flash illumination.
+  - **Snowfall**: 3D multi-layered snowflakes influenced by real-time wind speed.
+  - **Clear Day**: Radiating solar lens flares and ambient light motes.
   - **Clear Night**: Twinkling starfield with occasional cosmic shooting stars.
-  - **Mist & Fog**: Drifting multi-layered mist and fog simulation.
+  - **Mist & Fog**: Multi-layered volumetric drifting mist.
 
 ### 2. 🗺️ Interactive Live Precipitation Radar (RainViewer + Leaflet)
-- Dark-mode, high-performance interactive radar map.
-- Live animated precipitation loops with frame timeline scrubber, play/pause controls, and smooth color palettes.
-- Auto-zooms to searched cities with live condition markers.
+- Dark-mode, high-performance interactive radar map powered by **Leaflet.js**.
+- Live animated precipitation radar loops from **RainViewer API** with playback scrubber, frame timestamps, and play/pause controls.
+- Pulsing city marker that pans and zooms smoothly to searched locations.
 
-### 3. 🧠 Smart Weather AI Assistant & Activity Insights
-- **Attire & Gear Advisor**: Automated recommendations for layers, outerwear, sunglasses, and umbrella needs based on real-time temperature, wind chills, UV index, and rain probability.
-- **Activity Quality Scores**: Real-time 0–100 ratings for:
-  - 🏃‍♂️ **Outdoor Running & Workout**
-  - 🚗 **Driving Safety & Road Conditions**
-  - 🔭 **Stargazing & Astronomical Visibility**
-  - 🏖️ **Beach & Pool / UV Safety**
-- **Astronomical Timeline**: Solar progress (dawn, sunrise, solar noon, sunset, dusk) and accurate lunar phase graphic.
+### 3. 🏃 Optimal Activity Window Planner
+- Intelligent 24-hour evaluation for lifestyle activities:
+  - 🏃 **Outdoor Run**: Identifies ideal temperature, 0% rain, low UV, and light wind.
+  - 🚗 **Car Wash**: Finds optimal dry streaks with no precipitation.
+  - 🐕 **Dog Walking**: Avoids hot asphalt and freezing rain/ice.
+  - 📸 **Golden Hour Photography**: Calculates optimal sunrise/sunset lighting with favorable cloud textures.
+- Automatically calculates and highlights the **exact optimal time range** (e.g., *5:00 PM – 7:30 PM*).
 
-### 4. 🎧 Procedural Ambient Soundscapes (Web Audio API)
-- Zero external audio files required! Synthesizes ambient weather audio directly in browser memory using Web Audio nodes (white/pink noise filters, low-frequency oscillators, filtered resonance):
-  - Soothing rain patter
-  - Whistling wind breeze
-  - Distant low-frequency thunder rumbles
-  - Gentle summer day ambience
-- Volume slider and one-click mute/unmute.
+### 4. 🕰️ Weather Flashback (Historical Climate Machine)
+- Powered by the **Open-Meteo Historical Archive API** (records dating back to **1940**).
+- Compares today's weather in your city against the exact same calendar day across past decades:
+  - **1980, 2000, 2010, and 2020**.
+  - Displays historical high/lows and calculates climate temperature deltas (e.g., *+3°C warmer today*).
 
-### 5. 📊 24-Hour Interactive Temperature & Precipitation Curve
-- Interactive smooth SVG curve charting 24-hour temperature, "feels like" temp, and precipitation chance bars.
-- Mouse hover / touch scrubbing with real-time detail tooltip.
+### 5. 🌊 Marine, Surf & Coastal Conditions
+- Powered by the **Open-Meteo Marine API**:
+  - Real-time wave height ($m$), swell period ($s$), and surf state for coastal areas.
+  - Graceful freshwater status indicator for inland cities and lakes.
 
-### 6. 🌿 Comprehensive Air Quality Index (AQI) & Pollutant Breakdown
-- Powered by the Open-Meteo Air Quality API:
-  - US & European AQI levels with color-coded risk meter.
-  - $PM_{2.5}$, $PM_{10}$, Ozone ($O_3$), Nitrogen Dioxide ($NO_2$), Carbon Monoxide ($CO$).
-  - Health guidance for sensitive groups.
+### 6. 🎛️ 4-Track Procedural Ambient Sound Mixer & Presets
+- Synthesizes organic soundscapes directly in browser memory using the **Web Audio API** — zero external MP3 files needed!
+- **4 Independent Channel Faders**:
+  - 🌧️ Rain Patter
+  - 🍃 Wind Breeze
+  - ⚡ Thunder Rumble
+  - 🌅 Ambient Warmth
+- **4 Instant Sound Presets**:
+  - `☕ Cozy Attic Rain` (dense rain + gentle warmth)
+  - `❄️ Winter Blizzard` (howling wind + crisp air)
+  - `⚡ Tropical Storm` (heavy rain + rolling thunder)
+  - `🌌 Midnight Calm` (serene ambient night breeze)
 
-### 7. ⚖️ Dual-City Comparison Mode
-- Compare weather side-by-side between two cities (temperature, humidity, wind, UV, 7-day outlook) — ideal for vacation or trip planning.
+### 7. 🚗 Commute & Travel Route Weather
+- Interactive travel route calculator:
+  - Input origin and destination cities (e.g., *London to Edinburgh*).
+  - Calculates conditions at **Departure**, **Midpoint Highway Waypoint**, and **Destination Arrival**.
+  - Displays real-time driving hazard badges (*Aquaplaning Risk*, *Low Visibility Fog*, *High Crosswinds*, *Clear Highway*).
 
-### 8. ⚡ Power-User Experience & Keyboard Shortcuts
-- Search anywhere with `/`.
-- Toggle between Celsius and Fahrenheit with `C` / `F`.
-- Toggle live radar modal with `M`.
-- Toggle ambient soundscapes with `S`.
-- Refresh weather with `R`.
-- Instant quick-search pills for popular global hubs (Tokyo, London, New York, Paris, Sydney, Bengaluru).
-- Saved favorites with local storage persistence.
+### 8. 📊 24-Hour Visual Temperature & Rain Curve
+- Smooth SVG Bézier curve charting 24-hour temperature, dew point, and vertical precipitation probability bars with interactive hover scrubbing.
+
+### 9. 🌿 Comprehensive Air Quality & Environmental Grid
+- **Wind & Direction Compass** with rotating direction pointer.
+- **UV Index** with color-coded safety risk gauge.
+- **Air Quality Index (AQI)**: Real-time US & European AQI, $PM_{2.5}$, and $PM_{10}$.
+- **Sun & Moon Timeline**: Sunrise, sunset, daylight duration, and calculated lunar phase (`Waxing Gibbous 🌔`, `Full Moon 🌕`, etc.).
+- **Humidity & Dew Point**, **Atmospheric Visibility**, **Barometric Pressure**, and **Precipitation Probability**.
+
+### 10. 📲 Progressive Web App (PWA) & Offline Mode
+- **Standalone Mobile & Desktop App**: Installable via `manifest.json`.
+- **Service Worker (`sw.js`)**: Caches static assets and uses a Stale-While-Revalidate caching strategy for weather data so previously viewed cities load instantly offline.
+- **Morning Weather Briefing**: One-click summary notification generator.
 
 ---
 
-## 🛠️ Technology Stack
+## ⚡ Power-User Keyboard Shortcuts
 
-- **Frontend Core**: HTML5 semantic markup, ES6+ JavaScript modules.
-- **Styling**: Vanilla CSS with modern CSS custom properties, Glassmorphism, backdrop filters, responsive grid layout, and custom animations.
-- **Visuals & VFX**: HTML5 2D Canvas procedural particle engine.
-- **Audio**: Web Audio API (procedural parametric synthesis).
-- **Maps**: Leaflet.js with CartoDB Dark Matter base tiles + RainViewer API live radar overlays.
-- **Data Providers**:
-  - [Open-Meteo Weather API](https://open-meteo.com/) (Free, no API key needed, global high-resolution forecasts).
-  - [Open-Meteo Air Quality API](https://open-meteo.com/en/docs/air-quality-api).
-  - [Open-Meteo Geocoding API](https://open-meteo.com/en/docs/geocoding-api).
-  - [RainViewer API](https://www.rainviewer.com/api.html).
+| Key | Action |
+|:---:|:---|
+| `/` | Focus search bar to query any city worldwide |
+| `U` | Toggle between Celsius (°C) and Fahrenheit (°F) |
+| `M` | Open / Close Live Precipitation Radar modal |
+| `S` | Toggle Ambient Weather Audio |
+| `C` | Open / Close Dual-City Comparison modal |
+| `T` | Open / Close Commute & Travel Route Weather modal |
+| `R` | Refresh current city weather data |
+| `Esc`| Dismiss search suggestions and close modals |
+
+---
+
+## 🔑 100% Free & Zero API Keys
+
+AtmosVibe requires **NO API keys, NO registrations, and NO subscriptions**:
+
+1. **[Open-Meteo Weather API](https://open-meteo.com/)**: High-resolution global forecasts (current, hourly, 7-day).
+2. **[Open-Meteo Air Quality API](https://open-meteo.com/en/docs/air-quality-api)**: Worldwide pollutant monitoring ($PM_{2.5}$, $PM_{10}$, $O_3$, $NO_2$).
+3. **[Open-Meteo Historical Archive API](https://open-meteo.com/en/docs/historical-weather-api)**: Historical climate records from 1940 to present day.
+4. **[Open-Meteo Marine API](https://open-meteo.com/en/docs/marine-weather-api)**: Global ocean wave, swell, and tide conditions.
+5. **[Open-Meteo Geocoding API](https://open-meteo.com/en/docs/geocoding-api)**: Instant city search and coordinate lookups.
+6. **[RainViewer API](https://www.rainviewer.com/api.html)**: Free public animated precipitation radar tiles.
+7. **CartoDB Dark Matter**: Free open-source map baselayer tiles.
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
-Any modern web browser (Chrome, Edge, Firefox, Safari) and a simple HTTP server (like Python, Node `serve`, or VS Code Live Server).
-
-### Running Locally
-
-1. Open a terminal in the project directory:
+### Quick Run
+1. Clone this repository:
    ```bash
+   git clone https://github.com/amruthck177/weather_app.git
    cd weather_app
    ```
 
-2. Start a local HTTP server:
+2. Start any local HTTP server:
    ```bash
-   # Using Python 3
+   # Python 3
    python -m http.server 3000
-   ```
-   Or using Node.js:
-   ```bash
+
+   # Node.js
    npx serve .
    ```
 
@@ -109,16 +137,18 @@ Any modern web browser (Chrome, Edge, Firefox, Safari) and a simple HTTP server 
 
 ```
 weather_app/
-├── index.html       # Semantic layout, modals, drawers, and UI components
-├── styles.css       # Glassmorphic design system, responsive grid, animations
-├── app.js           # Core state management, Open-Meteo APIs, insights, shortcuts
-├── weatherVfx.js    # 60fps Canvas particle and atmospheric effects engine
-├── audio.js         # Procedural Web Audio synthesizer for ambient soundscapes
+├── index.html       # Semantic layout, dashboards, and modal controllers
+├── styles.css       # Glassmorphism design system, themes, and responsive grid
+├── app.js           # Core orchestrator: APIs, AI advisor, activity planner, and routes
+├── weatherVfx.js    # 60 FPS procedural atmospheric canvas particle engine
 ├── radar.js         # Leaflet + RainViewer live animated radar controller
-└── README.md        # Comprehensive documentation
+├── audio.js         # 4-channel Web Audio soundscape synthesizer & presets
+├── manifest.json    # Progressive Web App (PWA) manifest configuration
+├── sw.js            # Service Worker providing offline caching & network resilience
+└── README.md        # Complete project documentation
 ```
 
 ---
 
 ## 📄 License
-MIT License. Open-source and free to use.
+This project is open-source and available under the [MIT License](LICENSE).
