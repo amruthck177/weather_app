@@ -1,0 +1,18 @@
+{
+  "name": "AtmosVibe - Weather Intelligence & Radar",
+  "short_name": "AtmosVibe",
+  "description": "Next-gen interactive weather intelligence with live radar, 24-hour visual temperature curves, procedural soundscapes, and AI lifestyle insights.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#070a12",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230f172a'/><circle cx='42' cy='42' r='20' fill='%23fbbf24'/><path d='M68 72H32a18 18 0 0 1-2.4-35.8A21 21 0 0 1 70 43a15 15 0 0 1-2 29Z' fill='%2338bdf8'/></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
