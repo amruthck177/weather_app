@@ -1,7 +1,7 @@
 /**
- * audio.js - 4-Track Procedural Web Audio Weather Mixer & Soundscapes
- * Synthesizes organic ambient sounds (rain, wind, thunder, calm breeze) in browser memory.
- * Features 4 independent channel faders and soundscape presets.
+ * audio.js - 5-Track Procedural Web Audio Weather Mixer & Lo-Fi Generator
+ * Synthesizes organic ambient sounds (rain, wind, thunder, calm warmth) AND
+ * generative Lo-Fi pentatonic ambient musical chords with 3D spatial panning.
  */
 
 class WeatherAudioEngine {
@@ -17,7 +17,8 @@ class WeatherAudioEngine {
       rain: 0.4,
       wind: 0.3,
       thunder: 0.2,
-      warmth: 0.35
+      warmth: 0.35,
+      chords: 0.3
     };
 
     // Channel Gain Nodes
@@ -25,12 +26,19 @@ class WeatherAudioEngine {
       rain: null,
       wind: null,
       thunder: null,
-      warmth: null
+      warmth: null,
+      chords: null
     };
 
-    // Generator active nodes
+    // Spatial Panner Nodes
+    this.rainPanner = null;
+    this.thunderPanner = null;
+
+    // Generators & timers
     this.activeNodes = [];
     this.thunderTimeout = null;
+    this.chordInterval = null;
+    this.chordStep = 0;
   }
 
   init() {
@@ -42,13 +50,22 @@ class WeatherAudioEngine {
     this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
     this.masterGain.connect(this.ctx.destination);
 
-    // Initialize 4 channel gains
+    // Initialize 5 channel gains
     Object.keys(this.channels).forEach((ch) => {
       const gainNode = this.ctx.createGain();
       gainNode.gain.setValueAtTime(this.channels[ch], this.ctx.currentTime);
       gainNode.connect(this.masterGain);
       this.channelGains[ch] = gainNode;
     });
+
+    // Create Stereo Panner nodes if supported
+    if (this.ctx.createStereoPanner) {
+      this.rainPanner = this.ctx.createStereoPanner();
+      this.rainPanner.pan.setValueAtTime(-0.2, this.ctx.currentTime);
+
+      this.thunderPanner = this.ctx.createStereoPanner();
+      this.thunderPanner.pan.setValueAtTime(0.3, this.ctx.currentTime);
+    }
   }
 
   ensureContextRunning() {
@@ -76,10 +93,10 @@ class WeatherAudioEngine {
 
   setPreset(presetName) {
     const presets = {
-      'cozy-rain': { rain: 0.75, wind: 0.2, thunder: 0.0, warmth: 0.4 },
-      'winter-blizzard': { rain: 0.0, wind: 0.85, thunder: 0.0, warmth: 0.1 },
-      'tropical-storm': { rain: 0.85, wind: 0.65, thunder: 0.55, warmth: 0.2 },
-      'midnight-calm': { rain: 0.15, wind: 0.3, thunder: 0.0, warmth: 0.7 }
+      'cozy-rain': { rain: 0.75, wind: 0.2, thunder: 0.0, warmth: 0.4, chords: 0.35 },
+      'winter-blizzard': { rain: 0.0, wind: 0.85, thunder: 0.0, warmth: 0.1, chords: 0.2 },
+      'tropical-storm': { rain: 0.85, wind: 0.65, thunder: 0.55, warmth: 0.2, chords: 0.15 },
+      'midnight-calm': { rain: 0.15, wind: 0.3, thunder: 0.0, warmth: 0.7, chords: 0.45 }
     };
 
     const preset = presets[presetName];
@@ -129,6 +146,10 @@ class WeatherAudioEngine {
       clearTimeout(this.thunderTimeout);
       this.thunderTimeout = null;
     }
+    if (this.chordInterval) {
+      clearInterval(this.chordInterval);
+      this.chordInterval = null;
+    }
 
     this.activeNodes.forEach(item => {
       try {
@@ -163,10 +184,10 @@ class WeatherAudioEngine {
   startGenerators(type) {
     if (!this.ctx || !this.isPlaying) return;
 
-    // Start all 4 generators connected to their respective channel gain nodes
     this.playRainTrack();
     this.playWindTrack();
     this.playWarmthTrack();
+    this.startLoFiChords();
 
     if (type.includes('thunder') || this.channels.thunder > 0.1) {
       this.scheduleThunder();
@@ -191,7 +212,13 @@ class WeatherAudioEngine {
 
     noiseSource.connect(highpass);
     highpass.connect(lowpass);
-    lowpass.connect(this.channelGains.rain);
+
+    if (this.rainPanner) {
+      lowpass.connect(this.rainPanner);
+      this.rainPanner.connect(this.channelGains.rain);
+    } else {
+      lowpass.connect(this.channelGains.rain);
+    }
 
     noiseSource.start();
     this.activeNodes.push(noiseSource, highpass, lowpass);
@@ -247,6 +274,51 @@ class WeatherAudioEngine {
     this.activeNodes.push(noiseSource, filter);
   }
 
+  // Generative Lo-Fi Ambient Chords
+  startLoFiChords() {
+    // Beautiful pentatonic chord frequencies (C minor 9 / E major 7)
+    const chordProgressions = [
+      [130.81, 155.56, 196.00, 233.08], // C, Eb, G, Bb
+      [116.54, 146.83, 174.61, 220.00], // Bb, D, F, A
+      [103.83, 130.81, 155.56, 196.00], // Ab, C, Eb, G
+      [116.54, 146.83, 174.61, 207.65]  // Bb, D, F, Ab
+    ];
+
+    const playChord = () => {
+      if (!this.ctx || !this.isPlaying || this.channels.chords < 0.05) return;
+      const notes = chordProgressions[this.chordStep % chordProgressions.length];
+      this.chordStep++;
+
+      const now = this.ctx.currentTime;
+      const duration = 4.2;
+
+      notes.forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now);
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(450, now);
+
+        const noteGain = this.ctx.createGain();
+        noteGain.gain.setValueAtTime(0.001, now);
+        noteGain.gain.linearRampToValueAtTime(0.07 / notes.length, now + 0.8 + idx * 0.1);
+        noteGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+        osc.connect(filter);
+        filter.connect(noteGain);
+        noteGain.connect(this.channelGains.chords);
+
+        osc.start(now);
+        osc.stop(now + duration);
+      });
+    };
+
+    playChord();
+    this.chordInterval = setInterval(playChord, 5000);
+  }
+
   scheduleThunder() {
     if (!this.isPlaying) return;
     const delay = 7000 + Math.random() * 11000;
@@ -262,6 +334,11 @@ class WeatherAudioEngine {
     if (!this.ctx || !this.isPlaying) return;
     const now = this.ctx.currentTime;
     const duration = 3.5;
+
+    // Randomize stereo position
+    if (this.thunderPanner) {
+      this.thunderPanner.pan.setValueAtTime((Math.random() * 2 - 1) * 0.8, now);
+    }
 
     const noiseBuffer = this.createNoiseBuffer(duration);
     const noise = this.ctx.createBufferSource();
@@ -279,7 +356,13 @@ class WeatherAudioEngine {
 
     noise.connect(filter);
     filter.connect(strikeGain);
-    strikeGain.connect(this.channelGains.thunder);
+
+    if (this.thunderPanner) {
+      strikeGain.connect(this.thunderPanner);
+      this.thunderPanner.connect(this.channelGains.thunder);
+    } else {
+      strikeGain.connect(this.channelGains.thunder);
+    }
 
     noise.start(now);
     noise.stop(now + duration);

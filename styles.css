@@ -166,7 +166,7 @@ body {
 .search-wrapper {
   position: relative;
   flex: 1;
-  max-width: 480px;
+  max-width: 420px;
 }
 .search-box {
   display: flex;
@@ -268,26 +268,26 @@ body {
   color: var(--text-secondary);
 }
 
-/* Nav Actions (Units, Sound, Radar, Comparison, Travel, PWA) */
+/* Nav Actions */
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 .action-btn {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--card-border);
   color: var(--text-primary);
-  padding: 0.55rem 0.9rem;
+  padding: 0.5rem 0.85rem;
   border-radius: var(--radius-full);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   transition: var(--transition-smooth);
 }
 .action-btn:hover {
@@ -298,6 +298,19 @@ body {
   background: rgba(56, 189, 248, 0.2);
   border-color: var(--accent-cyan);
   color: var(--accent-cyan);
+}
+
+/* Radio Voice Broadcaster Button */
+.radio-btn {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(56, 189, 248, 0.25));
+  border-color: var(--accent-purple);
+  color: #fff;
+}
+.radio-btn.broadcasting {
+  background: linear-gradient(135deg, #a855f7, #38bdf8);
+  color: #04070d;
+  font-weight: 700;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
 }
 
 /* Equalizer Bars Animation */
@@ -635,11 +648,7 @@ body {
   display: block;
 }
 
-/* ==========================================================================
-   NEW ADVANCED SUBSYSTEMS (Activity Planner, Flashback, Marine, Mixer)
-   ========================================================================== */
-
-/* 1. Optimal Activity Window Planner Card */
+/* Optimal Activity Window Planner Card */
 .planner-card {
   padding: 1.75rem;
   background: linear-gradient(135deg, rgba(22, 33, 62, 0.6), rgba(15, 23, 42, 0.5));
@@ -712,7 +721,7 @@ body {
   color: var(--text-primary);
 }
 
-/* 2. Weather Flashback (Historical Machine) */
+/* Weather Flashback (Historical Machine) */
 .flashback-card {
   padding: 1.75rem;
 }
@@ -758,6 +767,50 @@ body {
 .delta-cooler { color: var(--accent-cyan); }
 .delta-same { color: var(--text-muted); }
 
+/* NEW: Earth's Live Extremes Leaderboard */
+.extremes-card {
+  padding: 1.75rem;
+  background: linear-gradient(135deg, rgba(30, 27, 75, 0.5), rgba(15, 23, 42, 0.6));
+}
+.extremes-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.extreme-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.extreme-item:hover {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: var(--accent-cyan);
+  transform: translateY(-3px);
+}
+.extreme-tag {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.extreme-place {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+}
+.extreme-stat {
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
 /* Detailed Environmental Grid */
 .details-grid {
   display: grid;
@@ -800,6 +853,31 @@ body {
 .metric-sub {
   font-size: 0.8rem;
   color: var(--text-secondary);
+}
+
+/* Pollen Breakdown */
+.pollen-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+.pollen-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+}
+.pollen-meter-bg {
+  width: 90px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.pollen-meter-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
 }
 
 /* Wind Compass & Meters */
@@ -1094,43 +1172,6 @@ body {
 .radar-status-tag.past { background: rgba(56, 189, 248, 0.2); color: var(--accent-cyan); }
 .radar-status-tag.nowcast { background: rgba(251, 146, 60, 0.2); color: var(--accent-orange); }
 
-/* City Comparison Modal */
-.compare-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  overflow-y: auto;
-}
-.compare-column {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: var(--radius-md);
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-.compare-city-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-}
-.compare-metric-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  font-size: 0.9rem;
-}
-.compare-metric-label {
-  color: var(--text-secondary);
-}
-.compare-metric-val {
-  font-weight: 700;
-  color: #fff;
-}
-
 /* Multi-Track Soundscape Mixer Modal */
 .mixer-modal-content {
   width: 100%;
@@ -1189,6 +1230,55 @@ body {
 .channel-slider {
   width: 100%;
   accent-color: var(--accent-cyan);
+}
+
+/* 9:16 Social Story Modal */
+.story-modal-content {
+  width: 100%;
+  max-width: 440px;
+  background: #090e1a;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  gap: 1.25rem;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+}
+#story-canvas {
+  width: 270px;
+  height: 480px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+.story-actions-row {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+}
+.story-action-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s;
+}
+.btn-download-story {
+  background: var(--accent-cyan);
+  color: #04070d;
+}
+.btn-share-story {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid var(--card-border);
 }
 
 /* Commute Route Weather Modal */
@@ -1267,6 +1357,9 @@ body {
   .flashback-years-row {
     grid-template-columns: repeat(2, 1fr);
   }
+  .extremes-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
@@ -1294,7 +1387,7 @@ body {
     grid-template-columns: 90px 40px 1fr 130px;
     font-size: 0.85rem;
   }
-  .compare-grid {
+  .extremes-grid {
     grid-template-columns: 1fr;
   }
   .flashback-years-row {

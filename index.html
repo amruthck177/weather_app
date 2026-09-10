@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AtmosVibe - Live Weather Intelligence & Radar</title>
-  <meta name="description" content="Next-gen interactive weather intelligence with live precipitation radar, 24-hour visual temperature curves, procedural soundscapes, climate flashback, and AI lifestyle insights.">
+  <meta name="description" content="Next-gen interactive weather intelligence with live precipitation radar, voice radio broadcast, 24-hour visual curves, climate flashback, and social stories.">
   <meta name="theme-color" content="#0f172a">
   <link rel="manifest" href="manifest.json">
 
@@ -34,7 +34,7 @@
         <div>
           <h1 class="brand-name">AtmosVibe</h1>
         </div>
-        <span class="brand-badge">ULTRA AI</span>
+        <span class="brand-badge">PRO EDITION</span>
       </div>
 
       <!-- Smart Search Input & Dropdown -->
@@ -58,6 +58,25 @@
 
       <!-- Quick Action Controls -->
       <div class="nav-actions">
+        <!-- AI Radio Host Voice Broadcast Button -->
+        <button class="action-btn radio-btn" id="voice-radio-btn" title="Listen to AI Voice Weather Broadcaster">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="22"></line>
+          </svg>
+          <span id="radio-btn-text">AI Radio</span>
+        </button>
+
+        <!-- Social Story Card Generator Button -->
+        <button class="action-btn" id="story-toggle-btn" title="Generate 9:16 Social Weather Story Card">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+          <span>Story</span>
+        </button>
+
         <!-- Soundscape Toggle with Mixer Modal Trigger -->
         <button class="action-btn" id="audio-toggle-btn" title="Ambient Weather Soundscape (Key: S)">
           <span class="eq-bars">
@@ -69,7 +88,7 @@
         </button>
 
         <!-- Sound Mixer Faders Modal Button -->
-        <button class="action-btn" id="mixer-toggle-btn" title="Open 4-Track Ambient Sound Mixer">
+        <button class="action-btn" id="mixer-toggle-btn" title="Open 5-Track Sound Mixer with Lo-Fi Chords">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="4" y1="21" x2="4" y2="14"></line>
             <line x1="4" y1="10" x2="4" y2="3"></line>
@@ -137,7 +156,7 @@
       <button class="quick-pill" data-city="New York" data-lat="40.7128" data-lon="-74.0060" data-country="United States">New York</button>
       <button class="quick-pill" data-city="Paris" data-lat="48.8566" data-lon="2.3522" data-country="France">Paris</button>
       <button class="quick-pill" data-city="Sydney" data-lat="-33.8688" data-lon="151.2093" data-country="Australia">Sydney</button>
-      <button class="quick-pill" data-city="Bengaluru" data-lat="12.9716" data-lon="77.5946" data-country="India">Bengaluru</button>
+      <button class="quick-pill" data-city="Bengaluru" data-lat="12.9716" data-lon77.5946" data-country="India">Bengaluru</button>
     </div>
 
     <!-- Main Dashboard Grid -->
@@ -236,7 +255,50 @@
       </section>
     </main>
 
-    <!-- NEW: Optimal Activity Window Interactive Planner -->
+    <!-- NEW: Earth's Live Extremes Leaderboard -->
+    <section class="glass-card extremes-card">
+      <div class="card-header-flex">
+        <h3 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-orange);">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          <span>Earth's Live Extremes Leaderboard</span>
+        </h3>
+        <span style="font-size: 0.8rem; color: var(--text-secondary);">Click to Teleport</span>
+      </div>
+
+      <div class="extremes-grid">
+        <div class="extreme-item" data-city="Death Valley" data-lat="36.5323" data-lon="-116.9325" data-country="United States">
+          <span class="extreme-tag" style="color: var(--accent-orange);">🌋 Hottest Place</span>
+          <span class="extreme-place">Death Valley, USA</span>
+          <span class="extreme-stat" style="color: var(--accent-orange);">46°C</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Blistering Desert Sun</span>
+        </div>
+
+        <div class="extreme-item" data-city="Oymyakon" data-lat="63.4641" data-lon="142.7737" data-country="Russia">
+          <span class="extreme-tag" style="color: var(--accent-cyan);">🧊 Coldest Place</span>
+          <span class="extreme-place">Oymyakon, Siberia</span>
+          <span class="extreme-stat" style="color: var(--accent-cyan);">-32°C</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Deep Sub-Zero Freeze</span>
+        </div>
+
+        <div class="extreme-item" data-city="Mount Washington" data-lat="44.2706" data-lon="-71.3033" data-country="United States">
+          <span class="extreme-tag" style="color: var(--accent-yellow);">💨 Windiest Peak</span>
+          <span class="extreme-place">Mt. Washington, USA</span>
+          <span class="extreme-stat" style="color: var(--accent-yellow);">68 km/h</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Gale-Force Gusts</span>
+        </div>
+
+        <div class="extreme-item" data-city="Mawsynram" data-lat="25.2986" data-lon="91.5822" data-country="India">
+          <span class="extreme-tag" style="color: var(--accent-blue);">🌧️ Wettest Region</span>
+          <span class="extreme-place">Mawsynram, India</span>
+          <span class="extreme-stat" style="color: var(--accent-blue);">85% Rain</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Tropical Monsoons</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Optimal Activity Window Interactive Planner -->
     <section class="glass-card planner-card">
       <div class="card-header-flex">
         <h3 class="section-title">
@@ -270,7 +332,7 @@
       </div>
     </section>
 
-    <!-- NEW: Weather Flashback (Historical Climate Machine) -->
+    <!-- Weather Flashback (Historical Climate Machine) -->
     <section class="glass-card flashback-card">
       <div class="card-header-flex">
         <h3 class="section-title">
@@ -289,7 +351,7 @@
       </div>
     </section>
 
-    <!-- Comprehensive Atmospheric & Coastal Grid -->
+    <!-- Comprehensive Atmospheric & Health Grid -->
     <section class="details-grid">
       <!-- 1. Wind & Direction Compass -->
       <div class="glass-card metric-card">
@@ -350,7 +412,41 @@
         </div>
       </div>
 
-      <!-- 4. NEW: Marine, Surf & Tide Coastal Forecast -->
+      <!-- 4. NEW: Pollen, Allergen & Migraine Health Deck -->
+      <div class="glass-card metric-card" id="pollen-metric-card">
+        <div class="metric-header">
+          <span>Pollen & Migraine Health</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a4 4 0 0 0-4 4v1a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4Z"></path>
+            <path d="M12 12v9"></path>
+          </svg>
+        </div>
+        <div class="metric-body">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span id="migraine-risk-label" class="aqi-pill aqi-good">Low Headache Risk</span>
+            <span style="font-size: 0.72rem; color: var(--text-muted);">Stable Barometer</span>
+          </div>
+          <div class="pollen-bars">
+            <div class="pollen-row">
+              <span style="color: var(--text-secondary);">Grass</span>
+              <div class="pollen-meter-bg"><div class="pollen-meter-fill" style="width: 25%; background: var(--accent-green);"></div></div>
+              <span style="color: var(--accent-green); font-size: 0.7rem;">Low</span>
+            </div>
+            <div class="pollen-row">
+              <span style="color: var(--text-secondary);">Birch</span>
+              <div class="pollen-meter-bg"><div class="pollen-meter-fill" style="width: 35%; background: var(--accent-yellow);"></div></div>
+              <span style="color: var(--accent-yellow); font-size: 0.7rem;">Med</span>
+            </div>
+            <div class="pollen-row">
+              <span style="color: var(--text-secondary);">Ragweed</span>
+              <div class="pollen-meter-bg"><div class="pollen-meter-fill" style="width: 15%; background: var(--accent-green);"></div></div>
+              <span style="color: var(--accent-green); font-size: 0.7rem;">Low</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Marine, Surf & Tide Coastal Forecast -->
       <div class="glass-card metric-card" id="marine-metric-card">
         <div class="metric-header">
           <span>Marine & Surf Condition</span>
@@ -368,7 +464,7 @@
         </div>
       </div>
 
-      <!-- 5. Sun & Moon Timeline -->
+      <!-- 6. Sun & Moon Timeline -->
       <div class="glass-card metric-card">
         <div class="metric-header">
           <span>Sun & Moon Timeline</span>
@@ -388,7 +484,7 @@
         </div>
       </div>
 
-      <!-- 6. Humidity & Dew Point -->
+      <!-- 7. Humidity & Dew Point -->
       <div class="glass-card metric-card">
         <div class="metric-header">
           <span>Humidity & Dew Point</span>
@@ -399,21 +495,6 @@
         <div class="metric-body">
           <span class="metric-main-val" id="metric-humidity-val">68%</span>
           <span class="metric-sub" id="metric-dewpoint-val">The dew point is 11°C right now.</span>
-        </div>
-      </div>
-
-      <!-- 7. Visibility -->
-      <div class="glass-card metric-card">
-        <div class="metric-header">
-          <span>Visibility</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-        </div>
-        <div class="metric-body">
-          <span class="metric-main-val" id="metric-visibility-val">10 km</span>
-          <span class="metric-sub" id="metric-visibility-sub">Perfect atmospheric clarity.</span>
         </div>
       </div>
 
@@ -452,6 +533,42 @@
         <!-- Populated via JS with 7-day items & temperature progress bars -->
       </div>
     </section>
+  </div>
+
+  <!-- 9:16 Social Story Modal -->
+  <div class="modal-backdrop" id="story-modal">
+    <div class="story-modal-content">
+      <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+        <span style="font-weight: 700; font-size: 1rem; color: #fff;">📸 Weather Story Card</span>
+        <button class="close-modal-btn" id="close-story-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <canvas id="story-canvas" width="540" height="960"></canvas>
+      <div class="story-actions-row">
+        <button class="story-action-btn btn-download-story" id="download-story-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Download PNG</span>
+        </button>
+        <button class="story-action-btn btn-share-story" id="share-story-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+          </svg>
+          <span>Share</span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Live Radar Interactive Modal -->
@@ -502,7 +619,7 @@
             <circle cx="6" cy="18" r="3"></circle>
             <circle cx="18" cy="16" r="3"></circle>
           </svg>
-          <span>4-Track Procedural Sound Mixer</span>
+          <span>5-Track Sound Mixer & Lo-Fi Chords</span>
         </div>
         <button class="close-modal-btn" id="close-mixer-btn" title="Close Mixer">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -523,7 +640,7 @@
         </div>
       </div>
 
-      <!-- 4 Channel Faders -->
+      <!-- 5 Channel Faders -->
       <div class="mixer-channels-grid">
         <div class="channel-box">
           <div class="channel-header">
@@ -555,6 +672,14 @@
             <span id="label-fader-warmth" style="font-family: var(--font-mono); color: var(--accent-cyan);">40%</span>
           </div>
           <input type="range" class="channel-slider" id="fader-warmth" min="0" max="1" step="0.02" value="0.4">
+        </div>
+
+        <div class="channel-box" style="grid-column: span 2;">
+          <div class="channel-header">
+            <span>🎹 Procedural Lo-Fi Chords</span>
+            <span id="label-fader-chords" style="font-family: var(--font-mono); color: var(--accent-purple);">35%</span>
+          </div>
+          <input type="range" class="channel-slider" id="fader-chords" min="0" max="1" step="0.02" value="0.35">
         </div>
       </div>
     </div>

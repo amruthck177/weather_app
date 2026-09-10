@@ -1,7 +1,8 @@
 /**
  * app.js - Complete Weather Intelligence & Workstation Controller
  * Orchestrates Open-Meteo Weather, Air Quality, Marine, and Archive APIs,
- * Geocoding, AI Advice, Activity Planner, Route Weather, Sound Mixer, and PWA.
+ * Geocoding, AI Radio Host, 9:16 Social Story Canvas, Earth Extremes,
+ * Activity Planner, Route Weather, Sound Mixer, and PWA.
  */
 
 import { weatherVfx } from './weatherVfx.js';
@@ -20,6 +21,7 @@ const state = {
   marineData: null,
   flashbackData: null,
   isAudioActive: false,
+  isBroadcastingRadio: false,
   selectedActivity: 'run',
   favorites: JSON.parse(localStorage.getItem('atmos_favorites') || '["London", "Tokyo", "New York"]'),
   compareCity: 'Tokyo',
@@ -512,7 +514,6 @@ function renderOptimalActivityWindow(data) {
     const hourDate = new Date(hourly.time[i]);
     const temp = hourly.temperature_2m[i];
     const rain = hourly.precipitation_probability[i] || 0;
-    const uv = (data.daily?.uv_index_max?.[0] || 3);
     const code = hourly.weather_code[i];
 
     let score = 0;
@@ -523,7 +524,6 @@ function renderOptimalActivityWindow(data) {
     } else if (state.selectedActivity === 'dog') {
       score = 100 - Math.abs(temp - 19) * 3 - (rain * 0.9);
     } else if (state.selectedActivity === 'photo') {
-      // Near sunset or sunrise
       const h = hourDate.getHours();
       const isGolden = (h >= 6 && h <= 8) || (h >= 17 && h <= 20);
       score = isGolden ? 95 : 40;
@@ -571,7 +571,7 @@ function renderFlashback(flashbackList, currentTemp) {
   }).join('');
 }
 
-// Render Details Grid & Marine
+// Render Details Grid & Marine & Pollen
 function renderDetailsGrid(data, aqiData, marineData) {
   const current = data.current;
   const daily = data.daily;
@@ -619,7 +619,20 @@ function renderDetailsGrid(data, aqiData, marineData) {
   const pm10 = aqiData?.current?.pm10 || 14.1;
   document.getElementById('metric-aqi-pollutants').textContent = `PM2.5: ${pm25} µg/m³ • PM10: ${pm10} µg/m³`;
 
-  // 4. Marine
+  // 4. Pollen & Migraine Sensor
+  const pressure = Math.round(current.pressure_msl || current.surface_pressure || 1013);
+  const migrainePill = document.getElementById('migraine-risk-label');
+  if (migrainePill) {
+    if (pressure < 1005 || (data.hourly && Math.abs(data.hourly.pressure_msl?.[0] - pressure) > 4)) {
+      migrainePill.className = 'aqi-pill aqi-unhealthy';
+      migrainePill.textContent = 'Migraine Alert (Pressure Drop)';
+    } else {
+      migrainePill.className = 'aqi-pill aqi-good';
+      migrainePill.textContent = 'Low Headache Risk';
+    }
+  }
+
+  // 5. Marine
   const waveHeight = marineData?.current?.wave_height;
   const wavePeriod = marineData?.current?.wave_period;
   if (waveHeight !== undefined && waveHeight !== null) {
@@ -632,7 +645,7 @@ function renderDetailsGrid(data, aqiData, marineData) {
     document.getElementById('marine-sub-info').textContent = 'Local lakes & rivers peaceful';
   }
 
-  // 5. Sun & Moon
+  // 6. Sun & Moon
   const sunriseStr = daily.sunrise[0];
   const sunsetStr = daily.sunset[0];
   const sunrise = new Date(sunriseStr);
@@ -647,19 +660,12 @@ function renderDetailsGrid(data, aqiData, marineData) {
   const moon = getMoonPhaseInfo();
   document.getElementById('metric-moon-phase').textContent = `${moon.name} ${moon.icon}`;
 
-  // 6. Humidity
+  // 7. Humidity
   document.getElementById('metric-humidity-val').textContent = `${current.relative_humidity_2m}%`;
   const dewPoint = data.hourly?.dew_point_2m ? data.hourly.dew_point_2m[new Date().getHours()] : (current.temperature_2m - ((100 - current.relative_humidity_2m) / 5));
   document.getElementById('metric-dewpoint-val').textContent = `The dew point is ${formatTemp(dewPoint)}${getUnitSymbol()} right now.`;
 
-  // 7. Visibility
-  const visMeters = data.hourly?.visibility ? data.hourly.visibility[new Date().getHours()] : 10000;
-  const visKm = Math.round(visMeters / 1000);
-  document.getElementById('metric-visibility-val').textContent = `${visKm} km`;
-  document.getElementById('metric-visibility-sub').textContent = visKm >= 10 ? 'Perfect atmospheric clarity.' : 'Slight mist or haze.';
-
   // 8. Pressure
-  const pressure = Math.round(current.pressure_msl || current.surface_pressure || 1013);
   document.getElementById('metric-pressure-val').textContent = `${pressure} hPa`;
 }
 
@@ -709,6 +715,183 @@ function renderExtendedForecast(data) {
     `;
   }
   forecastList.innerHTML = html;
+}
+
+// 🎙️ AI Radio Host Broadcaster Engine
+function toggleRadioBroadcast() {
+  if (!('speechSynthesis' in window)) {
+    showToast('Speech synthesis not supported on this browser.');
+    return;
+  }
+
+  const radioBtn = document.getElementById('voice-radio-btn');
+  const radioText = document.getElementById('radio-btn-text');
+
+  if (state.isBroadcastingRadio) {
+    window.speechSynthesis.cancel();
+    state.isBroadcastingRadio = false;
+    radioBtn.classList.remove('broadcasting');
+    radioText.textContent = 'AI Radio';
+    return;
+  }
+
+  const temp = formatTemp(state.weatherData?.current?.temperature_2m || 20);
+  const cond = state.weatherData ? getWeatherMeta(state.weatherData.current.weather_code).text : 'pleasant skies';
+  const wind = Math.round(state.weatherData?.current?.wind_speed_10m || 10);
+  const optTime = document.getElementById('opt-time-range')?.textContent || 'late afternoon';
+
+  const script = `Welcome to AtmosVibe Radio. Here is your live meteorological dispatch for ${state.city}. We are currently recording ${temp} degrees ${state.unit === 'f' ? 'Fahrenheit' : 'Celsius'} under ${cond}. Winds are moving at ${wind} kilometers per hour. For athletes and outdoor enthusiasts, your peak comfort window today is between ${optTime}. Dress comfortably, stay hydrated, and enjoy your day!`;
+
+  const utterance = new SpeechSynthesisUtterance(script);
+  utterance.rate = 1.0;
+  utterance.pitch = 1.05;
+
+  utterance.onstart = () => {
+    state.isBroadcastingRadio = true;
+    radioBtn.classList.add('broadcasting');
+    radioText.textContent = 'Broadcasting...';
+  };
+
+  utterance.onend = () => {
+    state.isBroadcastingRadio = false;
+    radioBtn.classList.remove('broadcasting');
+    radioText.textContent = 'AI Radio';
+  };
+
+  utterance.onerror = () => {
+    state.isBroadcastingRadio = false;
+    radioBtn.classList.remove('broadcasting');
+    radioText.textContent = 'AI Radio';
+  };
+
+  window.speechSynthesis.speak(utterance);
+}
+
+// 📸 9:16 Social Story Canvas Generator
+function drawStoryCard() {
+  const canvas = document.getElementById('story-canvas');
+  if (!canvas || !state.weatherData) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+
+  // Background Gradient
+  const grad = ctx.createLinearGradient(0, 0, w, h);
+  grad.addColorStop(0, '#111827');
+  grad.addColorStop(0.4, '#1e1b4b');
+  grad.addColorStop(1, '#080c16');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+
+  // Aesthetic glowing circle
+  const glow = ctx.createRadialGradient(w * 0.5, h * 0.35, 10, w * 0.5, h * 0.35, 200);
+  glow.addColorStop(0, 'rgba(56, 189, 248, 0.35)');
+  glow.addColorStop(1, 'rgba(56, 189, 248, 0)');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, w, h);
+
+  // Top header branding
+  ctx.fillStyle = '#38bdf8';
+  ctx.font = 'bold 22px Outfit, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('⚡ ATMOSVIBE LIVE DISPATCH', w / 2, 70);
+
+  // City Name & Country
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 44px Outfit, sans-serif';
+  ctx.fillText(state.city.toUpperCase(), w / 2, 140);
+
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '500 20px Outfit, sans-serif';
+  ctx.fillText(`${state.country} • ${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}`, w / 2, 180);
+
+  // Large Temp
+  const temp = formatTemp(state.weatherData.current.temperature_2m);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '900 110px Outfit, sans-serif';
+  ctx.fillText(`${temp}${getUnitSymbol()}`, w / 2, 340);
+
+  // Condition Text
+  const condText = getWeatherMeta(state.weatherData.current.weather_code).text;
+  ctx.fillStyle = '#38bdf8';
+  ctx.font = '700 28px Outfit, sans-serif';
+  ctx.fillText(condText.toUpperCase(), w / 2, 395);
+
+  // Stats Card Box
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.roundRect(40, 460, w - 80, 240, 20);
+  ctx.fill();
+  ctx.stroke();
+
+  // Stats inside box
+  const feelsLike = formatTemp(state.weatherData.current.apparent_temperature);
+  const humidity = state.weatherData.current.relative_humidity_2m;
+  const wind = Math.round(state.weatherData.current.wind_speed_10m);
+  const uv = state.weatherData.daily?.uv_index_max?.[0] || 3;
+
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '600 18px Outfit, sans-serif';
+  ctx.fillText('FEELS LIKE', 70, 515);
+  ctx.fillText('HUMIDITY', 70, 595);
+  ctx.fillText('WIND SPEED', 310, 515);
+  ctx.fillText('UV INDEX', 310, 595);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 28px Outfit, sans-serif';
+  ctx.fillText(`${feelsLike}°`, 70, 550);
+  ctx.fillText(`${humidity}%`, 70, 630);
+  ctx.fillText(`${wind} km/h`, 310, 550);
+  ctx.fillText(`${uv.toFixed(1)}`, 310, 630);
+
+  // Optimal Workout Banner
+  const optTime = document.getElementById('opt-time-range')?.textContent || '5:00 PM – 7:30 PM';
+  ctx.fillStyle = 'rgba(52, 211, 153, 0.15)';
+  ctx.strokeStyle = 'rgba(52, 211, 153, 0.4)';
+  ctx.beginPath();
+  ctx.roundRect(40, 730, w - 80, 90, 16);
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#34d399';
+  ctx.font = 'bold 16px Outfit, sans-serif';
+  ctx.fillText('🏃 BEST RUNNING WINDOW TODAY', w / 2, 765);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 24px JetBrains Mono, monospace';
+  ctx.fillText(optTime, w / 2, 800);
+
+  // Footer Tagline
+  ctx.fillStyle = '#64748b';
+  ctx.font = '500 16px Outfit, sans-serif';
+  ctx.fillText('Generated with AtmosVibe Intelligence', w / 2, 910);
+}
+
+function downloadStoryCard() {
+  const canvas = document.getElementById('story-canvas');
+  const a = document.createElement('a');
+  a.download = `AtmosVibe-${state.city}-Story.png`;
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+
+function shareStoryCard() {
+  const canvas = document.getElementById('story-canvas');
+  if (navigator.share && canvas.toBlob) {
+    canvas.toBlob(blob => {
+      const file = new File([blob], `AtmosVibe-${state.city}.png`, { type: 'image/png' });
+      navigator.share({
+        title: `Weather in ${state.city}`,
+        text: `Check out live weather in ${state.city} on AtmosVibe!`,
+        files: [file]
+      }).catch(() => downloadStoryCard());
+    });
+  } else {
+    downloadStoryCard();
+  }
 }
 
 // Main Weather Coordinator
@@ -912,9 +1095,9 @@ function setupEventListeners() {
   // Unit toggle
   const unitBtn = document.getElementById('unit-toggle-btn');
   const unitDisplay = document.getElementById('unit-display');
-  unitBtn.addEventListener('click', () => {
+  unitBtn?.addEventListener('click', () => {
     state.unit = state.unit === 'c' ? 'f' : 'c';
-    unitDisplay.textContent = state.unit === 'c' ? '°C' : '°F';
+    if (unitDisplay) unitDisplay.textContent = state.unit === 'c' ? '°C' : '°F';
     if (state.weatherData) {
       renderHero(state.weatherData);
       renderAiAdvisor(state.weatherData, state.airQualityData);
@@ -926,17 +1109,48 @@ function setupEventListeners() {
     }
   });
 
+  // Voice Radio Broadcaster
+  const radioBtn = document.getElementById('voice-radio-btn');
+  radioBtn?.addEventListener('click', toggleRadioBroadcast);
+
+  // Social Story Modal
+  const storyBtn = document.getElementById('story-toggle-btn');
+  const storyModal = document.getElementById('story-modal');
+  const closeStoryBtn = document.getElementById('close-story-btn');
+  const downloadStoryBtn = document.getElementById('download-story-btn');
+  const shareStoryBtn = document.getElementById('share-story-btn');
+
+  storyBtn?.addEventListener('click', () => {
+    storyModal?.classList.add('active');
+    drawStoryCard();
+  });
+  closeStoryBtn?.addEventListener('click', () => storyModal?.classList.remove('active'));
+  downloadStoryBtn?.addEventListener('click', downloadStoryCard);
+  shareStoryBtn?.addEventListener('click', shareStoryCard);
+
+  // Earth's Extremes Teleportation
+  document.querySelectorAll('.extreme-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const city = item.dataset.city;
+      const lat = parseFloat(item.dataset.lat);
+      const lon = parseFloat(item.dataset.lon);
+      const country = item.dataset.country;
+      loadCityWeather(lat, lon, city, country);
+      showToast(`Teleported to ${city}, ${country}!`);
+    });
+  });
+
   // Audio ambient soundscape toggle
   const audioBtn = document.getElementById('audio-toggle-btn');
   const audioLabel = document.getElementById('audio-btn-label');
-  audioBtn.addEventListener('click', () => {
+  audioBtn?.addEventListener('click', () => {
     state.isAudioActive = weatherAudio.togglePlay();
     if (state.isAudioActive) {
       audioBtn.classList.add('sound-playing', 'active');
-      audioLabel.textContent = 'Playing';
+      if (audioLabel) audioLabel.textContent = 'Playing';
     } else {
       audioBtn.classList.remove('sound-playing', 'active');
-      audioLabel.textContent = 'Ambient';
+      if (audioLabel) audioLabel.textContent = 'Ambient';
     }
   });
 
@@ -944,13 +1158,13 @@ function setupEventListeners() {
   const mixerBtn = document.getElementById('mixer-toggle-btn');
   const mixerModal = document.getElementById('mixer-modal');
   const closeMixerBtn = document.getElementById('close-mixer-btn');
-  mixerBtn.addEventListener('click', () => {
-    mixerModal.classList.add('active');
+  mixerBtn?.addEventListener('click', () => {
+    mixerModal?.classList.add('active');
     weatherAudio.ensureContextRunning();
   });
-  closeMixerBtn.addEventListener('click', () => mixerModal.classList.remove('active'));
+  closeMixerBtn?.addEventListener('click', () => mixerModal?.classList.remove('active'));
 
-  ['rain', 'wind', 'thunder', 'warmth'].forEach(ch => {
+  ['rain', 'wind', 'thunder', 'warmth', 'chords'].forEach(ch => {
     const fader = document.getElementById(`fader-${ch}`);
     const label = document.getElementById(`label-fader-${ch}`);
     if (fader) {
@@ -967,7 +1181,7 @@ function setupEventListeners() {
       document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       weatherAudio.setPreset(btn.dataset.preset);
-      ['rain', 'wind', 'thunder', 'warmth'].forEach(ch => {
+      ['rain', 'wind', 'thunder', 'warmth', 'chords'].forEach(ch => {
         const fader = document.getElementById(`fader-${ch}`);
         const label = document.getElementById(`label-fader-${ch}`);
         if (fader && label) label.textContent = `${Math.round(parseFloat(fader.value) * 100)}%`;
@@ -990,18 +1204,22 @@ function setupEventListeners() {
   const commuteModal = document.getElementById('commute-modal');
   const closeCommuteBtn = document.getElementById('close-commute-btn');
   const calcRouteBtn = document.getElementById('calc-route-btn');
-  commuteBtn.addEventListener('click', () => {
-    commuteModal.classList.add('active');
-    calculateRouteWeather(document.getElementById('route-origin-input').value, document.getElementById('route-dest-input').value);
+  commuteBtn?.addEventListener('click', () => {
+    commuteModal?.classList.add('active');
+    const origin = document.getElementById('route-origin-input')?.value || 'London';
+    const dest = document.getElementById('route-dest-input')?.value || 'Edinburgh';
+    calculateRouteWeather(origin, dest);
   });
-  closeCommuteBtn.addEventListener('click', () => commuteModal.classList.remove('active'));
-  calcRouteBtn.addEventListener('click', () => {
-    calculateRouteWeather(document.getElementById('route-origin-input').value, document.getElementById('route-dest-input').value);
+  closeCommuteBtn?.addEventListener('click', () => commuteModal?.classList.remove('active'));
+  calcRouteBtn?.addEventListener('click', () => {
+    const origin = document.getElementById('route-origin-input')?.value || 'London';
+    const dest = document.getElementById('route-dest-input')?.value || 'Edinburgh';
+    calculateRouteWeather(origin, dest);
   });
 
   // Briefing Notification
   const briefingBtn = document.getElementById('briefing-btn');
-  briefingBtn.addEventListener('click', () => {
+  briefingBtn?.addEventListener('click', () => {
     if ('Notification' in window) {
       Notification.requestPermission().then(permission => {
         const title = `Morning Briefing: ${state.city}`;
@@ -1027,24 +1245,26 @@ function setupEventListeners() {
   const radarPlayIcon = document.getElementById('radar-play-icon');
   const radarSlider = document.getElementById('radar-slider');
 
-  radarBtn.addEventListener('click', () => {
-    radarModal.classList.add('active');
+  radarBtn?.addEventListener('click', () => {
+    radarModal?.classList.add('active');
     weatherRadar.init('radar-map');
     weatherRadar.updateMarker(state.lat, state.lon, state.city);
   });
-  closeRadarBtn.addEventListener('click', () => radarModal.classList.remove('active'));
+  closeRadarBtn?.addEventListener('click', () => radarModal?.classList.remove('active'));
 
-  radarPlayBtn.addEventListener('click', () => {
+  radarPlayBtn?.addEventListener('click', () => {
     const isPlaying = weatherRadar.togglePlayback();
-    radarPlayIcon.innerHTML = isPlaying
-      ? '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>'
-      : '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+    if (radarPlayIcon) {
+      radarPlayIcon.innerHTML = isPlaying
+        ? '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>'
+        : '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+    }
   });
 
-  radarSlider.addEventListener('input', (e) => {
+  radarSlider?.addEventListener('input', (e) => {
     weatherRadar.stopPlayback();
     weatherRadar.showFrame(parseInt(e.target.value));
-    radarPlayIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+    if (radarPlayIcon) radarPlayIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
   });
 
   // Compare Modal
@@ -1052,12 +1272,12 @@ function setupEventListeners() {
   const compareModal = document.getElementById('compare-modal');
   const closeCompareBtn = document.getElementById('close-compare-btn');
   const compareInput = document.getElementById('compare-search-input');
-  compareBtn.addEventListener('click', () => {
-    compareModal.classList.add('active');
+  compareBtn?.addEventListener('click', () => {
+    compareModal?.classList.add('active');
     loadComparisonCity(state.compareCity);
   });
-  closeCompareBtn.addEventListener('click', () => compareModal.classList.remove('active'));
-  compareInput.addEventListener('keydown', (e) => {
+  closeCompareBtn?.addEventListener('click', () => compareModal?.classList.remove('active'));
+  compareInput?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && e.target.value.trim()) {
       state.compareCity = e.target.value.trim();
       loadComparisonCity(state.compareCity);
@@ -1067,9 +1287,9 @@ function setupEventListeners() {
   // Search input & dropdown
   const searchInput = document.getElementById('city-search');
   const searchDropdown = document.getElementById('search-dropdown');
-  searchInput.addEventListener('input', handleSearchInput);
+  searchInput?.addEventListener('input', handleSearchInput);
 
-  searchDropdown.addEventListener('click', (e) => {
+  searchDropdown?.addEventListener('click', (e) => {
     const item = e.target.closest('.search-item');
     if (!item) return;
 
@@ -1080,19 +1300,19 @@ function setupEventListeners() {
 
     loadCityWeather(lat, lon, city, country);
     searchDropdown.classList.remove('active');
-    searchInput.value = '';
+    if (searchInput) searchInput.value = '';
     document.querySelectorAll('.quick-pill').forEach(p => p.classList.remove('active'));
   });
 
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.search-wrapper')) {
-      searchDropdown.classList.remove('active');
+      searchDropdown?.classList.remove('active');
     }
   });
 
   // Geolocation Button
   const geoBtn = document.getElementById('geo-location-btn');
-  geoBtn.addEventListener('click', () => {
+  geoBtn?.addEventListener('click', () => {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -1128,7 +1348,7 @@ function setupEventListeners() {
 
   // Favorites
   const favBtn = document.getElementById('fav-btn');
-  favBtn.addEventListener('click', () => {
+  favBtn?.addEventListener('click', () => {
     if (state.favorites.includes(state.city)) {
       state.favorites = state.favorites.filter(c => c !== state.city);
       favBtn.classList.remove('is-fav');
@@ -1143,7 +1363,7 @@ function setupEventListeners() {
   document.addEventListener('keydown', (e) => {
     if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
       if (e.key === 'Escape') {
-        searchDropdown.classList.remove('active');
+        searchDropdown?.classList.remove('active');
         document.activeElement.blur();
       }
       return;
@@ -1151,24 +1371,24 @@ function setupEventListeners() {
 
     if (e.key === '/') {
       e.preventDefault();
-      searchInput.focus();
+      searchInput?.focus();
     } else if (e.key.toLowerCase() === 'u') {
-      unitBtn.click();
+      unitBtn?.click();
     } else if (e.key.toLowerCase() === 'm') {
-      radarBtn.click();
+      radarBtn?.click();
     } else if (e.key.toLowerCase() === 's') {
-      audioBtn.click();
+      audioBtn?.click();
     } else if (e.key.toLowerCase() === 'c') {
-      compareBtn.click();
+      compareBtn?.click();
     } else if (e.key.toLowerCase() === 't') {
-      commuteBtn.click();
+      commuteBtn?.click();
     } else if (e.key.toLowerCase() === 'r') {
       loadCityWeather(state.lat, state.lon, state.city, state.country);
     }
   });
 }
 
-// Service Worker Registration for PWA & Offline
+// Service Worker Registration
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').catch(err => {

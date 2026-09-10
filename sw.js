@@ -1,10 +1,10 @@
 /**
  * sw.js - Service Worker for AtmosVibe
- * Provides offline caching, network-first strategy for weather APIs,
- * and background reliability.
+ * Uses Network-First strategy with Cache fallback so updates are instant
+ * while still providing full offline reliability.
  */
 
-const CACHE_NAME = 'atmosvibe-v1';
+const CACHE_NAME = 'atmosvibe-v2';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -36,39 +36,17 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// Network-first with Cache fallback for all requests
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
-
-  // Network-first for Open-Meteo & RainViewer APIs, caching last successful response
-  if (url.hostname.includes('open-meteo.com') || url.hostname.includes('rainviewer.com')) {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          if (response && response.status === 200) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
-          return response;
-        })
-        .catch(() => caches.match(event.request))
-    );
-    return;
-  }
-
-  // Stale-while-revalidate for local assets and external fonts/scripts
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const fetchPromise = fetch(event.request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const clone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
-          return networkResponse;
-        })
-        .catch(() => cached);
-
-      return cached || fetchPromise;
-    })
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const clone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        }
+        return networkResponse;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
